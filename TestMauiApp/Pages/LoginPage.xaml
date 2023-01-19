@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TestMauiApp.Pages.LoginPage"
+             xmlns:viewmodels="clr-namespace:TestMauiApp.ViewModels"
+             xmlns:models="clr-namespace:TestMauiApp.Models"
+             x:DataType="viewmodels:LoginViewModel"
+             Title="Login">
+    
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsEnabled="False" IsVisible="False" />
+    </Shell.BackButtonBehavior>
+    
+    <ContentPage.Content>
+        <VerticalStackLayout 
+            Spacing="25"
+            Padding="30,0"
+            VerticalOptions="Center">
+            
+            <Label Text="Login" FontSize="Large" />
+            <Entry Placeholder="Username" Text="{Binding Username, Mode=TwoWay}"/>
+            <Entry Placeholder="Password" IsPassword="True" Text="{Binding Password, Mode=TwoWay}"/>
+            <Button Text="Login" Command="{Binding LoginCommand}"/>
+        </VerticalStackLayout>
+    </ContentPage.Content>
+</ContentPage>

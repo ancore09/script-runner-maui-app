@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:TestMauiApp.Models"
+             xmlns:viewmodels="clr-namespace:TestMauiApp.ViewModels"
+             x:DataType="viewmodels:ScriptRunnerViewModel"
+             x:Class="TestMauiApp.Pages.ScriptRunnerPage"
+             Title="{Binding Script.Name}">
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior Command="{Binding GoBackCommand}" />
+    </Shell.BackButtonBehavior>
+    
+    <ContentPage.Content>
+        <Grid Padding="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="AUTO"/>
+                <RowDefinition Height="AUTO"/>
+                <RowDefinition Height="AUTO"/>
+                <RowDefinition Height="AUTO"/>
+                <RowDefinition Height="AUTO"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            
+            <Label Grid.Row="0" 
+                   Margin="0,0,0,8"
+                   FontSize="18" FontFamily="OpenSansSemibold"
+                   Text="Description"/>
+            <Label Grid.Row="1" 
+                   Margin="0,0,0,8"
+                   FontSize="14" FontFamily="OpenSansRegular"
+                   Text="{Binding Script.Description }"/>
+            <Label Grid.Row="2" 
+                   Margin="0,0,0,8"
+                   FontSize="18" FontFamily="OpenSansSemibold"
+                   Text="Scripts Arguments"/>
+            <Entry Grid.Row="3"
+                   Margin="0,0,0,8"
+                   Placeholder="-args"
+                   ClearButtonVisibility="WhileEditing"
+                   IsSpellCheckEnabled="false"
+                   Text="{Binding Script.Args, Mode=TwoWay}"/>
+            <Label Grid.Row="4" 
+                   Margin="0,0,0,8"
+                   FontSize="18" FontFamily="OpenSansSemibold"
+                   Text="Output"/>
+            <Label Grid.Row="5" 
+                   Margin="0,0,0,8"
+                   FontSize="14" FontFamily="OpenSansRegular"
+                   Text="{Binding ScriptOutput}"/>
+            <Button Grid.Row="6" 
+                    FontSize="14" FontFamily="OpenSansRegular"
+                    Text="Run Script"
+                    Command="{Binding RunScriptCommand}"/>
+            
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

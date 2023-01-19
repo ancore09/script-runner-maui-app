@@ -1,0 +1,14 @@
+version: '3.7'
+
+services: 
+  users-db:
+    image: postgres:latest
+    container_name: users-db
+    environment:
+      POSTGRES_USER: runner
+      POSTGRES_PASSWORD: runner
+      POSTGRES_DB: users
+    ports:
+      - 5432:5432
+    #volumes:
+    #  - ./data/users-db:/var/lib/postgresql/data

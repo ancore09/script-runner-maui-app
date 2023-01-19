@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:TestMauiApp.ViewModels"
+             xmlns:models="clr-namespace:TestMauiApp.Models"
+             x:Class="TestMauiApp.Pages.ScriptListPage"
+             x:DataType="viewmodels:ScriptsViewModel"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             Title="Scripts">
+    
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsEnabled="False" IsVisible="False" />
+    </Shell.BackButtonBehavior>
+    
+    <ContentPage.Content>
+        <Grid Padding="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="AUTO"/>
+            </Grid.RowDefinitions>
+            
+            <RefreshView Grid.Row="0"
+                         IsRefreshing="{Binding IsRefreshing }"
+                         Command="{Binding LoadScriptsCommand}">
+                <CollectionView  x:Name="ScriptsList"
+                                 ItemsSource="{Binding Scripts}">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical"
+                                           ItemSpacing="8"/>
+                    </CollectionView.ItemsLayout>
+                    
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="AUTO"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="AUTO"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <Image
+                                    Grid.Column="0"
+                                       Source="Resources/Images/scripticon.png"
+                                       HeightRequest="32"
+                                       WidthRequest="32">
+                                    <Image.Behaviors>
+                                        <toolkit:IconTintColorBehavior TintColor="{StaticResource Primary}"/>
+                                    </Image.Behaviors>
+                                </Image>
+                                
+                                    
+                                <Label Grid.Column="1" x:DataType="models:Script" FontSize="18" FontFamily="OpenSansSemibold"
+                                                      Text="{Binding Name}" VerticalTextAlignment="Center"/>
+                            
+                                <Button Grid.Column="2" Text="Run" 
+                                        Command="{Binding Source={x:Reference ScriptsList}, Path=BindingContext.RunScriptCommand}"
+                                        CommandParameter="{Binding}"/>
+                                <!--<Button Grid.Column="2" Text="Details"
+                                        Clicked="Button_OnClicked"
+                                        />-->
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </RefreshView>
+            
+            <Grid Grid.Row="1" ColumnSpacing="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" 
+                        Text="Shutdown" 
+                        BackgroundColor="Red"
+                        Command="{Binding ShutdownServerCommand}"/>
+                <Button Grid.Column="1" Text="Create New Script"/>
+            </Grid>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>
