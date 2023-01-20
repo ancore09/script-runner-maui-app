@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using TestMauiApp.Helpers;
 using TestMauiApp.Interfaces;
 using TestMauiApp.Models;
 
@@ -23,7 +24,7 @@ public partial class ScriptRunnerViewModel: ObservableObject
     private async Task RunScript()
     {
         var result = await _scriptRepository.RunScriptAsync(new RunRequest() { ScriptId = Script.Id, ScriptArgs = Script.Args });
-        switch (result)
+        switch (result.Error)
         {
             case "Unauthorized":
                 var tokens = await _userRepository.RefreshTokenAsync();
@@ -37,10 +38,11 @@ public partial class ScriptRunnerViewModel: ObservableObject
                     await Shell.Current.GoToAsync("//MainPage/LoginPage");
                 }
                 break;
-            default:
+            case "Unreachable":
+                ToastHelper.ShowToast("Server unreachable");
                 break;
         }
-        ScriptOutput = result;
+        ScriptOutput = result.StandardOutput;
     }
     
     [RelayCommand]

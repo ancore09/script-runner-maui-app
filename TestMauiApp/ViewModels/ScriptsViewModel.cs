@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using TestMauiApp.Helpers;
 using TestMauiApp.Interfaces;
 using TestMauiApp.Models;
 using TestMauiApp.Pages;
@@ -65,10 +66,6 @@ public partial class ScriptsViewModel: ObservableObject, IScriptsViewModel
     {
         var result = await _scriptRepository.RunScriptAsync(new RunRequest() {ScriptId = 0, ScriptArgs = ""});
         
-        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-        ToastDuration duration = ToastDuration.Short;
-        double fontSize = 14;
-        var toast = Toast.Make(result, duration, fontSize);
-        await toast.Show(cancellationTokenSource.Token);
+        ToastHelper.ShowToast(result.StandardOutput);
     }
 }

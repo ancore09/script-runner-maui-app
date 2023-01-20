@@ -10,5 +10,7 @@ public record Script(
     [property: JsonPropertyName("description")]
     string Description,
     [property: JsonPropertyName("args")]
-    string Args
+    string Args,
+    [property: JsonPropertyName("path")]
+    string Path
     );

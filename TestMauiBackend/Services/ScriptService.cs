@@ -1,5 +1,6 @@
 using Dapper;
 using Npgsql;
+using TestMauiBackend.Helpers;
 using TestMauiBackend.Interfaces;
 using TestMauiBackend.Models;
 
@@ -13,14 +14,17 @@ public class ScriptService: IScriptService
     {
         _connectionString = configuration.GetConnectionString("DefaultConnection");
     }
-    public async Task<string> RunScript(long scriptId, string args)
+    public async Task<RunResponse> RunScript(long scriptId, string args)
     {
-        await Task.Delay(1000);
+        //await Task.Delay(1000);
         if (scriptId == 0)
         {
             Console.WriteLine("Shutdown...");
         }
-        return await Task.FromResult($"script output with args: {args}");
+        var script = await GetScriptById(scriptId);
+        //var output = PowerShellHelper.RunScript(script.Path, args);
+        var output = new RunResponse() { StandardOutput = $"{script.Id} | {args} | {script.Path}", StandardError = null };
+        return output;
     }
     
     public async Task<List<Script>> GetUserScripts(long userId)
@@ -40,5 +44,18 @@ public class ScriptService: IScriptService
             Description = x.description,
             Args = x.args
         }).ToList();
+    }
+
+    public async Task<Script> GetScriptById(long scriptId)
+    {
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var command = new NpgsqlCommand("select * from scripts where id = @id;", connection);
+        var queryParameters = new
+        {
+            id = scriptId
+        };
+        var result = await connection.QueryFirstAsync<Script>(command.CommandText, queryParameters);
+        return result;
     }
 }

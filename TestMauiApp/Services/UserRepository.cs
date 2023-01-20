@@ -30,12 +30,22 @@ public class UserRepository: IUserRepository
             Username = username,
             Password = password
         };
-        var response = await client.PostAsync($"{_baseUrl}/api/Login/login", new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
-        
-        if (response.StatusCode == HttpStatusCode.OK)
+
+        try
         {
-            LoginResponse loginResponse = JsonSerializer.Deserialize<LoginResponse>(await response.Content.ReadAsStringAsync());
-            return loginResponse;
+            var response = await client.PostAsync($"{_baseUrl}/api/Login/login",
+                new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
+
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                LoginResponse loginResponse =
+                    JsonSerializer.Deserialize<LoginResponse>(await response.Content.ReadAsStringAsync());
+                return loginResponse;
+            }
+        }
+        catch (Exception e)
+        {
+            return null;
         }
 
         return null;
@@ -49,17 +59,23 @@ public class UserRepository: IUserRepository
         var token = await SecureStorage.GetAsync("refresh_token");
         client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", token);
-        
-        var response = await client.PostAsync($"{_baseUrl}/api/Login/refresh", null);
-        switch (response.StatusCode)
+
+        try
         {
-            case HttpStatusCode.OK:
-                TokenResponse tokenResponse = JsonSerializer.Deserialize<TokenResponse>(await response.Content.ReadAsStringAsync());
-                return tokenResponse;
-            case HttpStatusCode.Unauthorized:
-                return new TokenResponse() {AccessToken = null, RefreshToken = null, Error = "Unauthorized"};
-            default:
-                return null;
+            var response = await client.PostAsync($"{_baseUrl}/api/Login/refresh", null);
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                    TokenResponse tokenResponse = JsonSerializer.Deserialize<TokenResponse>(await response.Content.ReadAsStringAsync());
+                    return tokenResponse;
+                case HttpStatusCode.Unauthorized:
+                    return new TokenResponse() {AccessToken = null, RefreshToken = null, Error = "Unauthorized"};
+                default:
+                    return null;
+            }
+        } catch (Exception e)
+        {
+            return new TokenResponse() {AccessToken = null, RefreshToken = null, Error = "Unreachable"};
         }
     }
 
@@ -71,16 +87,22 @@ public class UserRepository: IUserRepository
         var token = await SecureStorage.GetAsync("access_token");
         client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", token);
-        
-        var response = await client.GetAsync($"{_baseUrl}/api/Login/check");
-        switch (response.StatusCode)
+
+        try
         {
-            case HttpStatusCode.OK:
-                return new TokenResponse();
-            case HttpStatusCode.Unauthorized:
-                return new TokenResponse() {AccessToken = null, RefreshToken = null, Error = "Unauthorized"};
-            default:
-                return null;
+            var response = await client.GetAsync($"{_baseUrl}/api/Login/check");
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                    return new TokenResponse();
+                case HttpStatusCode.Unauthorized:
+                    return new TokenResponse() {AccessToken = null, RefreshToken = null, Error = "Unauthorized"};
+                default:
+                    return null;
+            }
+        } catch (Exception e)
+        {
+            return new TokenResponse() {AccessToken = null, RefreshToken = null, Error = "Unreachable"};
         }
     }
 

@@ -33,14 +33,9 @@ public partial class MainPage : ContentPage
         }
 
         var tokens = await _userRepository.Check();
-        if (tokens == null)
+        if (tokens.Error == "Unreachable")
         {
-            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-            string text = "Server Unreachable";
-            ToastDuration duration = ToastDuration.Short;
-            double fontSize = 14;
-            var toast = Toast.Make(text, duration, fontSize);
-            await toast.Show(cancellationTokenSource.Token);
+            ToastHelper.ShowToast("Server Unreachable");
             await _navigationService.ShellNavigateToAsync($"/{nameof(LoginPage)}", true, new Dictionary<string, object>());
             return;
         }
@@ -55,8 +50,8 @@ public partial class MainPage : ContentPage
             }
             await SecureStorage.SetAsync("access_token", tokens.AccessToken);
             await SecureStorage.SetAsync("refresh_token", tokens.RefreshToken);
-        } 
-
+        }
+        
         var userId = long.Parse(await SecureStorage.GetAsync("user_id"));
         var user = await _userRepository.GetUserByIdAsync(userId);
         

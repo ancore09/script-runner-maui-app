@@ -2,6 +2,7 @@ using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using TestMauiApp.Helpers;
 using TestMauiApp.Interfaces;
 using TestMauiApp.Pages;
 
@@ -37,15 +38,7 @@ public partial class LoginViewModel: ObservableObject
         }
         else
         {
-            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-
-            string text = "Wrong username or password";
-            ToastDuration duration = ToastDuration.Short;
-            double fontSize = 14;
-
-            var toast = Toast.Make(text, duration, fontSize);
-
-            await toast.Show(cancellationTokenSource.Token);
+            ToastHelper.ShowToast("Wrong username or password");
         }
     }
 }

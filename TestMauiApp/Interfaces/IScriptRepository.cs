@@ -7,5 +7,5 @@ namespace TestMauiApp.Interfaces;
 public interface IScriptRepository
 {
     public Task<List<Script>> LoadScriptsAsync(long userId);
-    public Task<string> RunScriptAsync(RunRequest request);
+    public Task<RunResponse> RunScriptAsync(RunRequest request);
 }

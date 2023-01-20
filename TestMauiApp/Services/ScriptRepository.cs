@@ -29,44 +29,57 @@ public class ScriptRepository: IScriptRepository
         var token = await SecureStorage.GetAsync("access_token");
         client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", token);
-        
-        var response = await client.GetAsync($"{_baseUrl}/api/Runner/GetUserScripts?id={userId}");
-        switch (response.StatusCode)
+
+        try
         {
-            case HttpStatusCode.OK:
-                var content = await response.Content.ReadAsStringAsync();
-                var scripts = JsonSerializer.Deserialize<List<Script>>(content);
-                return scripts;
-            case HttpStatusCode.Unauthorized:
-                return null;
-            default:
-                return null;
+            var response = await client.GetAsync($"{_baseUrl}/api/Runner/GetUserScripts?id={userId}");
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                    var content = await response.Content.ReadAsStringAsync();
+                    var scripts = JsonSerializer.Deserialize<List<Script>>(content);
+                    return scripts;
+                case HttpStatusCode.Unauthorized:
+                    return null;
+                default:
+                    return null;
+            }
+        }
+        catch (Exception e)
+        {
+            return null;
         }
     }
     
-    public async Task<string> RunScriptAsync(RunRequest request) {
+    public async Task<RunResponse> RunScriptAsync(RunRequest request) {
         DevHttpsConnectionHelper devHttpsConnectionHelper = new DevHttpsConnectionHelper(7132);
         HttpClient client = devHttpsConnectionHelper.HttpClient;
         
         var token = await SecureStorage.GetAsync("access_token");
         client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", token);
-        
-        if (request.ScriptId == 0) {
-            client.PostAsync($"{_baseUrl}/api/Runner/run", new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
-            return "Server shutdown";
-        }
-        
-        var response = await client.PostAsync($"{_baseUrl}/api/Runner/run", new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
 
-        switch (response.StatusCode)
+        try
         {
-            case HttpStatusCode.OK:
-                return await response.Content.ReadAsStringAsync();
-            case HttpStatusCode.Unauthorized:
-                return "Unauthorized";
-            default:
-                return null;
+            if (request.ScriptId == 0) {
+                client.PostAsync($"{_baseUrl}/api/Runner/run", new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
+                return new RunResponse() { StandardOutput = "Shutdown", StandardError = null, Error = null };
+            }
+            
+            var response = await client.PostAsync($"{_baseUrl}/api/Runner/run", new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                    var payload = await response.Content.ReadAsStringAsync();
+                    var result = JsonSerializer.Deserialize<RunResponse>(payload);
+                    return result;
+                case HttpStatusCode.Unauthorized:
+                    return new RunResponse() { StandardOutput = null, StandardError = null, Error = "Unauthorized" };
+                default:
+                    return null;
+            }
+        } catch (Exception e) {
+            return new RunResponse() { StandardOutput = null, StandardError = null, Error = "Unreachable" };
         }
     }
 }
