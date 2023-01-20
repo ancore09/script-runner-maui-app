@@ -19,7 +19,7 @@ public class ScriptService: IScriptService
         //await Task.Delay(1000);
         if (scriptId == 0)
         {
-            Console.WriteLine("Shutdown...");
+            return PowerShellHelper.Shutdown();
         }
         var script = await GetScriptById(scriptId);
         //var output = PowerShellHelper.RunScript(script.Path, args);

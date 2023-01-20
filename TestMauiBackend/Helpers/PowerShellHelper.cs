@@ -35,4 +35,23 @@ public class PowerShellHelper
         
         return new RunResponse() {StandardOutput = standardOutput, StandardError = errorOutput};
     }
+    
+    public static RunResponse Shutdown()
+    {
+        Task shutdownTask = new Task(async () =>
+        {
+            await Task.Delay(1000);
+            Console.WriteLine("Shutdown");
+            Process process = new Process();
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.FileName = "shutdown";
+            startInfo.Arguments = "/s /t 5";
+            startInfo.UseShellExecute = true;
+            startInfo.Verb = "runas";
+            process.StartInfo = startInfo;
+            process.Start();
+        });
+        shutdownTask.Start();
+        return new RunResponse() {StandardOutput = "Shutdown initiated", StandardError = ""};
+    }
 }

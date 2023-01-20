@@ -61,11 +61,6 @@ public class ScriptRepository: IScriptRepository
 
         try
         {
-            if (request.ScriptId == 0) {
-                client.PostAsync($"{_baseUrl}/api/Runner/run", new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
-                return new RunResponse() { StandardOutput = "Shutdown", StandardError = null, Error = null };
-            }
-            
             var response = await client.PostAsync($"{_baseUrl}/api/Runner/run", new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json"));
             switch (response.StatusCode)
             {
